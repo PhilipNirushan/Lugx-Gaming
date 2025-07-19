@@ -4,9 +4,18 @@
 const express = require('express');
 const router = express.Router();
 const {
-  logEvent
+  logEvent,
+  getAnalyticsEvents,
+  getAnalyticsSummary
 } = require('../controllers/analyticsController');
 
+// Log new event
 router.post('/', logEvent);
+
+// Get recent 20 events
+router.get('/', getAnalyticsEvents);
+
+// Get aggregated summary
+router.get('/summary', getAnalyticsSummary);
 
 module.exports = router;
