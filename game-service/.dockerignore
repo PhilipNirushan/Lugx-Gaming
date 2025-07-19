@@ -1,0 +1,7 @@
+// This is the .dockerignore file for the game-service
+// It specifies files and directories that should not be included in the Docker image
+// This helps to keep the image size smaller and avoid unnecessary files.
+
+node_modules
+npm-debug.log
+.env
