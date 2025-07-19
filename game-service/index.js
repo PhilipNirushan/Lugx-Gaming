@@ -1,3 +1,6 @@
+// This file sets up the Express server for the game service, handling routes and middleware.
+// It uses environment variables for configuration and includes CORS and body-parser middleware.
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
