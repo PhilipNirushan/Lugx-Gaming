@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  game-db:
+    image: postgres:15
+    container_name: game-db
+    restart: always
+    environment:
+      POSTGRES_DB: lugx_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - game-db-data:/var/lib/postgresql/data
+      - ./game-service/init:/docker-entrypoint-initdb.d
+
+  order-db:
+    image: postgres:15
+    container_name: order-db
+    restart: always
+    environment:
+      POSTGRES_DB: lugx_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+      - ./order-service/init:/docker-entrypoint-initdb.d
+
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+
+  game-service:
+    build: ./game-service
+    depends_on:
+      - game-db
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      PG_HOST: game-db
+      PG_PORT: 5432
+      PG_DATABASE: lugx_db
+      PG_USER: postgres
+      PG_PASSWORD: password
+
+  order-service:
+    build: ./order-service
+    depends_on:
+      - order-db
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      PG_HOST: order-db
+      PG_PORT: 5432
+      PG_DATABASE: lugx_db
+      PG_USER: postgres
+      PG_PASSWORD: password
+
+  analytics-service:
+    build: ./analytics-service
+    depends_on:
+      - clickhouse
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      CLICKHOUSE_HOST: https://w7nim9h45p.us-east-2.aws.clickhouse.cloud
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: RWJ_JG.GNS3Rd
+      CLICKHOUSE_DATABASE: lugx_analytics
+
+volumes:
+  game-db-data:
+  order-db-data:
+  clickhouse-data:
+
